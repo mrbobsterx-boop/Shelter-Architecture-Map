@@ -1,12 +1,14 @@
 /* ============================================================
-   MODULE 14 — VIEW: ПОРЯДОК ПОСТРОЙКИ (волны систем по req)
+   MODULE 17 — VIEW: ROADMAP (волны по req, поверх ВСЕХ 4 авторских каталогов сразу)
+   Это и есть «чертёж, по которому создаём .tscn/.gd/.tres» — единый порядок постройки
+   систем, компонентов, игровых объектов и данных, а не отдельный список на каждый каталог.
    ============================================================ */
 
 function waveRow(i){
-  return `<div class="reqrow"><span class="nm">${lnk(i.key)}${i.blocksScenes?badge('блокирует сцены','warn'):''}</span>${prioBadge(i.p)}${statusBadge(i)}</div>`;
+  return `<div class="reqrow"><span class="nm">${kindTag(i.kind)}${lnk(i.key)}${i.blocksScenes?badge('блокирует сцены','warn'):''}</span>${prioBadge(i.p)}${statusBadge(i)}</div>`;
 }
 function renderRoadmapBody(){
-  const hidedone=ui.rhide==='0'?false:true;
+  const hidedone=ui.rhide!=='0';
   const onlyp0=ui.rprio==='1';
   return WAVES.map((items,idx)=>{
     let list=items.slice().sort((a,b)=>a.p-b.p||a.n.localeCompare(b.n));
@@ -17,13 +19,12 @@ function renderRoadmapBody(){
   }).join('')||'<div class="empty">Под текущими фильтрами волн не осталось.</div>';
 }
 VIEW_RENDERERS.roadmap=function(){
-  ui.rhide=ui.rhide===undefined?'1':ui.rhide; ui.rprio=ui.rprio||'';
-  const cyc=SYSTEMS.filter(i=>i.cyclic);
-  return `<div class="toolbar"><h2>Порядок постройки — системы</h2></div>
-    <p class="muted">Волна 0 — системы, которые ни от чего не зависят (мост данных, фундамент движка). Дальше — то, что из них строится, по <code>req</code> каждой системы.</p>
+  const cyc=[...BY_KEY.values()].filter(i=>i.cyclic);
+  return `<div class="toolbar"><h2>Roadmap — единый порядок постройки</h2></div>
+    <p class="muted">Волна 0 — элементы, которые ни от чего не зависят (мост данных, фундамент движка, атомарные UI-компоненты). Дальше — то, что из них строится, по <code>req</code> каждого элемента, независимо от каталога.</p>
     <div class="row" style="margin-bottom:10px">
-      <label><input type="checkbox" data-f="rhide" data-which="sys" ${ui.rhide==='1'?'checked':''}> скрыть готовое/отложенное</label>
-      <label><input type="checkbox" data-f="rprio" data-which="sys" ${ui.rprio==='1'?'checked':''}> только P0</label>
+      <label><input type="checkbox" data-f="rhide" ${ui.rhide==='1'?'checked':''}> скрыть готовое/отложенное</label>
+      <label><input type="checkbox" data-f="rprio" ${ui.rprio==='1'?'checked':''}> только P0</label>
     </div>
     ${cyc.length?`<div class="problem err">Цикл в требованиях у: ${cyc.map(i=>lnk(i.key)).join(', ')} — волны для них не определены.</div>`:''}
     <div id="roadmapBody">${renderRoadmapBody()}</div>`;

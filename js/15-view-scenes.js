@@ -1,10 +1,11 @@
 /* ============================================================
-   MODULE 12 — VIEW: СЦЕНЫ (чек-лист комнат и зданий из проекта)
+   MODULE 15 — VIEW: СЦЕНЫ (чек-лист комнат и зданий из проекта) + КАРТОЧКА СЦЕНЫ
    Список целиком приходит из data/rooms и data/buildings — своего каталога у сцен нет.
+   Здесь же — общий диспетчер VIEW_RENDERERS.card: сцена или один из 4 авторских каталогов.
    ============================================================ */
 
 function filteredScenes(){
-  const f=ui.fScn, q=(f.search||'').trim().toLowerCase();
+  const f=ui.f.scene, q=(f.search||'').trim().toLowerCase();
   return SCENES.filter(i=>
     (!f.kind||i.kind===f.kind) && (!f.status||statusOf(i)===f.status) &&
     (!q||(i.id+' '+i.name+' '+(i.type||'')).toLowerCase().indexOf(q)!==-1)
@@ -34,23 +35,21 @@ function renderScenesBody(){
     const done=items.filter(isDone).length;
     return `<div class="card">
       <div class="grouphead"><b>${esc(label)}</b><span class="muted">${done}/${items.length}</span>${progressBar(done,items.length)}</div>
-      <div class="cardbody" style="padding:0">
-        ${table(['','Тип','Название','Подтип/режим','Шаги','Статус'],items.map(sceneRow))}
-      </div>
+      <div class="cardbody" style="padding:0">${table(['','Тип','Название','Подтип/режим','Шаги','Статус'],items.map(sceneRow))}</div>
     </div>`;
   }).join('');
 }
 function scenesFilterBar(){
-  const f=ui.fScn;
+  const f=ui.f.scene;
   const opt=(v,label,cur)=>`<option value="${esc(v)}" ${v===cur?'selected':''}>${esc(label)}</option>`;
   return `<div class="filters">
-    <div><label>Тип</label><select data-f="kind" data-which="scn">
+    <div><label>Тип</label><select data-f="kind" data-which="scene">
       ${opt('','Комнаты и здания',f.kind)}${opt('room','Только комнаты',f.kind)}${opt('building','Только здания/улицы',f.kind)}
     </select></div>
-    <div><label>Статус</label><select data-f="status" data-which="scn">
+    <div><label>Статус</label><select data-f="status" data-which="scene">
       ${opt('','Все',f.status)}${STATUSES.map(s=>opt(s.id,s.name,f.status)).join('')}
     </select></div>
-    <div><label>Поиск</label><input class="search" data-f="search" data-which="scn" value="${esc(f.search)}" placeholder="имя, id, тип…"></div>
+    <div><label>Поиск</label><input class="search" data-f="search" data-which="scene" value="${esc(f.search)}" placeholder="имя, id, тип…"></div>
   </div>`;
 }
 VIEW_RENDERERS.scenes=function(){
@@ -59,3 +58,39 @@ VIEW_RENDERERS.scenes=function(){
     <div id="scenesBody" style="margin-top:12px">${renderScenesBody()}</div>`;
 };
 REFRESH.scenes=function(){ const el=document.getElementById('scenesBody'); if(el) el.innerHTML=renderScenesBody(); updateSidebar(); };
+
+/* ---------- карточка сцены ---------- */
+function sceneKV(i){
+  if(i.kind==='room') return kv([
+    ['Тип комнаты',esc(i.type||'—')],['Размер',i.widthM+' × '+i.heightM+' м'],
+    ['Объектов (instances)',fmt(i.instCount)],['Дверей',fmt(i.doorCount)],['Свет',i.hasLight?'есть':'нет'],
+    ['Блоки (грунт/стены)',i.hasBlocks?'есть':'нет'],['Фоновых слоёв',fmt(i.bgCount)],
+    ['Роль в здании',esc(i.compositionRole||'—')],['Лестничных точек',fmt(i.stairCount)],
+    ['Файл',`<code>${esc(i.sourceFile)}</code>`],
+    ['.tscn в проекте',PROJECT.tscnById.has(i.id)?`<code>${esc(PROJECT.tscnById.get(i.id))}</code>`:'не найден']
+  ]);
+  return kv([
+    ['Режим',esc(i.layoutMode)],['Комнат в составе',fmt(i.roomsCount)],['Связей дверей',fmt(i.doorLinkCount)],
+    ['Случайных слотов',fmt(i.slotCount)],['Этажей',fmt(i.floorCount)],['Фоновых слоёв',fmt(i.bgCount)],
+    ['Файл',`<code>${esc(i.sourceFile)}</code>`],
+    ['.tscn в проекте',PROJECT.tscnById.has(i.id)?`<code>${esc(PROJECT.tscnById.get(i.id))}</code>`:'не найден']
+  ]);
+}
+function sceneCard(i){
+  const blockers=blockingSystems();
+  return `${backBtn()}
+    <div class="toolbar"><h2>${kindTag(i.kind)}${esc(i.name)}</h2>${statusBadge(i)}</div>
+    ${blockers.length?`<div class="blockedbanner">⛔ Ждёт фундамент движка: ${blockers.map(b=>lnk(b.key)).join(', ')}</div>`:''}
+    <div class="two">
+      <div class="card"><div class="cardhead"><b>Данные из проекта</b></div><div class="cardbody">${sceneKV(i)}</div></div>
+      <div class="card"><div class="cardhead"><b>Отметка и статус</b></div><div class="cardbody">${statusSelect(i)}<div style="margin-top:10px">${noteBlock(i)}</div></div></div>
+    </div>
+    <div class="card"><div class="cardhead"><b>Шаги готовности сцены в Godot</b></div><div class="cardbody">${stepsBlock(i)}</div></div>
+  `;
+}
+
+VIEW_RENDERERS.card=function(key){
+  const it=itemByKey(key);
+  if(!it) return backBtn()+`<div class="empty">Не найдено: ${esc(key)}</div>`;
+  return (it.kind==='room'||it.kind==='building')?sceneCard(it):renderAuthoredCard(it);
+};

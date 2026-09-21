@@ -1,8 +1,9 @@
 /* ============================================================
    MODULE 01 — CORE UTILS / PROJECT FOLDER
    Хелперы, File System Access API + IndexedDB, чтение/запись файлов проекта.
-   Scene Plan ЧИТАЕТ data/rooms, data/buildings, project.godot и папку сцен (*.tscn) —
-   для автоматических отметок. Пишет только один свой файл — data/scene_plan.json.
+   Shelter Architecture Map ЧИТАЕТ data/rooms, data/buildings, project.godot, папку сцен
+   (*.tscn) и res://-пути элементов чертежа — для автоматических отметок. Пишет только
+   один свой файл — data/scene_plan.json.
    ============================================================ */
 
 function esc(s){ return String(s===undefined||s===null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -10,7 +11,7 @@ function fmt(n){ return Number(n||0).toLocaleString('ru-RU'); }
 function num(v,def){ const n=Number(v); return Number.isFinite(n)?n:(def===undefined?0:def); }
 function pct(a,b){ return b?Math.round(a/b*100):0; }
 
-const DB_NAME='scene_plan_fs', DB_STORE='handles';
+const DB_NAME='sam_fs', DB_STORE='handles';
 let projectDirHandle=null;
 function idbOpen(){
   return new Promise((resolve,reject)=>{

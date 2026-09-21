@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Scene Plan</title>
+<title>Shelter Architecture Map</title>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 <div class="app">
 <header>
-  <h1>Scene Plan</h1>
+  <h1>Shelter Architecture Map</h1>
   <button id="btnConnect" class="primary">📁 Подключить папку проекта</button>
   <button id="btnRegrant" style="display:none">Разрешить доступ</button>
   <button id="btnScan">🔄 Сверить с проектом</button>
   <button id="btnSaveProject" title="Записать отметки в data/scene_plan.json">💾 Прогресс в проект</button>
   <button id="btnLoadProject" title="Загрузить отметки из data/scene_plan.json">📂 Из проекта</button>
-  <button id="btnExport" title="Скачать чек-лист в Markdown">⬇ Чек-лист .md</button>
+  <button id="btnExport" title="Скачать чертёж в Markdown">⬇ Чертёж .md</button>
   <span id="folderStatus" class="status">Папка не подключена — отметки хранятся в браузере</span>
   <div class="spacer"></div>
   <span id="scanStatus" class="status"></span>
@@ -23,26 +23,8 @@
 
 <aside>
   <div class="panel">
-    <h3>Системы (движок)</h3>
-    <div class="statgrid">
-      <div class="stat"><div class="n" id="sysDone">0</div><div class="t">Готово</div></div>
-      <div class="stat"><div class="n" id="sysWip">0</div><div class="t">В работе</div></div>
-      <div class="stat"><div class="n" id="sysTodo">0</div><div class="t">Не начато</div></div>
-      <div class="stat"><div class="n" id="sysTotal">0</div><div class="t">Всего</div></div>
-    </div>
-    <div class="bar big" style="margin-top:8px"><i id="sysBar" style="width:0"></i></div>
-    <div class="muted" id="sysPct" style="margin-top:4px"></div>
-  </div>
-  <div class="panel">
-    <h3>Сцены (комнаты/здания)</h3>
-    <div class="statgrid">
-      <div class="stat"><div class="n" id="scnDone">0</div><div class="t">Готово</div></div>
-      <div class="stat"><div class="n" id="scnWip">0</div><div class="t">В работе</div></div>
-      <div class="stat"><div class="n" id="scnTodo">0</div><div class="t">Не начато</div></div>
-      <div class="stat"><div class="n" id="scnTotal">0</div><div class="t">Всего</div></div>
-    </div>
-    <div class="bar big" style="margin-top:8px"><i id="scnBar" style="width:0"></i></div>
-    <div class="muted" id="scnPct" style="margin-top:4px"></div>
+    <h3>Прогресс</h3>
+    <div id="progressPanel"></div>
   </div>
   <div class="panel">
     <h3>Разделы</h3>
@@ -60,20 +42,23 @@
 <!-- Порядок менять нельзя: скрипты делят одну глобальную область, номер = порядок загрузки, INIT — последний -->
 <script src="js/01-core-utils.js"></script>
 <script src="js/02-vocab.js"></script>
-<script src="js/03-data-foundation.js"></script>
-<script src="js/04-data-character-shelter.js"></script>
-<script src="js/05-data-world-npc.js"></script>
-<script src="js/06-data-livingworld-consequences.js"></script>
-<script src="js/07-model.js"></script>
-<script src="js/08-store.js"></script>
-<script src="js/09-ui-core.js"></script>
-<script src="js/10-view-overview.js"></script>
-<script src="js/11-view-systems.js"></script>
-<script src="js/12-view-scenes.js"></script>
-<script src="js/13-view-card.js"></script>
-<script src="js/14-view-roadmap.js"></script>
-<script src="js/15-view-project.js"></script>
-<script src="js/16-view-reference.js"></script>
-<script src="js/17-init.js"></script>
+<script src="js/03-data-systems-foundation.js"></script>
+<script src="js/04-data-systems-character-shelter.js"></script>
+<script src="js/05-data-systems-world-npc.js"></script>
+<script src="js/06-data-systems-livingworld-consequences.js"></script>
+<script src="js/07-data-components.js"></script>
+<script src="js/08-data-gameobjects.js"></script>
+<script src="js/09-data-domains.js"></script>
+<script src="js/10-model.js"></script>
+<script src="js/11-store.js"></script>
+<script src="js/12-ui-core.js"></script>
+<script src="js/13-view-overview.js"></script>
+<script src="js/14-view-catalog.js"></script>
+<script src="js/15-view-scenes.js"></script>
+<script src="js/16-view-relations.js"></script>
+<script src="js/17-view-roadmap.js"></script>
+<script src="js/18-view-project.js"></script>
+<script src="js/19-view-reference.js"></script>
+<script src="js/20-init.js"></script>
 </body>
 </html>

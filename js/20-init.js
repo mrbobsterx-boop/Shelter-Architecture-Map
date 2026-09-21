@@ -1,5 +1,5 @@
 /* ============================================================
-   MODULE 17 — INIT (всегда последний)
+   MODULE 20 — INIT (всегда последний)
    ============================================================ */
 
 document.getElementById('btnConnect').addEventListener('click',connectProjectFolder);
